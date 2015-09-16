@@ -17,6 +17,48 @@ public class TokenListFragment extends ListFragment implements TokenList {
     SimpleAdapter adapter;
 
     @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.payment_form_fragment, container, false);
+
+        this.saveButton = (Button) view.findViewById(R.id.save);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                saveForm(view);
+            }
+        });
+
+        this.cardNumber = (EditText) view.findViewById(R.id.number);
+        this.cvc = (EditText) view.findViewById(R.id.cvc);
+        this.monthSpinner = (Spinner) view.findViewById(R.id.expMonth);
+        this.yearSpinner = (Spinner) view.findViewById(R.id.expYear);
+
+        return view;
+    }
+
+/*
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.payment_form_fragment, container, false);
+
+        this.saveButton = (Button) view.findViewById(R.id.save);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                saveForm(view);
+            }
+        });
+
+        this.cardNumber = (EditText) view.findViewById(R.id.number);
+        this.cvc = (EditText) view.findViewById(R.id.cvc);
+        this.monthSpinner = (Spinner) view.findViewById(R.id.expMonth);
+        this.yearSpinner = (Spinner) view.findViewById(R.id.expYear);
+
+        return view;
+    }
+    */
+
+    @Override
     public void onViewCreated(android.view.View view, android.os.Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         adapter = new SimpleAdapter(getActivity(),
