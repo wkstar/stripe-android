@@ -1,15 +1,27 @@
 package com.stripe.example.fragment;
 
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Spinner;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+
 import android.support.v4.app.ListFragment;
 import android.widget.SimpleAdapter;
 import com.stripe.example.TokenList;
 import com.stripe.example.R;
 import com.stripe.android.model.Token;
+import com.stripe.example.activity.PaymentActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.stripe.example.R.id.expMonth;
 
 public class TokenListFragment extends ListFragment implements TokenList {
 
@@ -17,46 +29,9 @@ public class TokenListFragment extends ListFragment implements TokenList {
     SimpleAdapter adapter;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.payment_form_fragment, container, false);
-
-        this.saveButton = (Button) view.findViewById(R.id.save);
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                saveForm(view);
-            }
-        });
-
-        this.cardNumber = (EditText) view.findViewById(R.id.number);
-        this.cvc = (EditText) view.findViewById(R.id.cvc);
-        this.monthSpinner = (Spinner) view.findViewById(R.id.expMonth);
-        this.yearSpinner = (Spinner) view.findViewById(R.id.expYear);
-
-        return view;
+    public void onListItemClick(ListView l, View v, int position, long id){
+        payUsingCard(position);
     }
-
-/*
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.payment_form_fragment, container, false);
-
-        this.saveButton = (Button) view.findViewById(R.id.save);
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                saveForm(view);
-            }
-        });
-
-        this.cardNumber = (EditText) view.findViewById(R.id.number);
-        this.cvc = (EditText) view.findViewById(R.id.cvc);
-        this.monthSpinner = (Spinner) view.findViewById(R.id.expMonth);
-        this.yearSpinner = (Spinner) view.findViewById(R.id.expYear);
-
-        return view;
-    }
-    */
 
     @Override
     public void onViewCreated(android.view.View view, android.os.Bundle savedInstanceState) {
@@ -75,6 +50,10 @@ public class TokenListFragment extends ListFragment implements TokenList {
         setListAdapter(null);
     }
 
+    public void payUsingCard(Integer position) {
+        ((PaymentActivity)getActivity()).payWithCard(position);
+    }
+
     @Override
     public void addToList(Token token) {
         String endingIn = getResources().getString(R.string.endingIn);
@@ -84,5 +63,4 @@ public class TokenListFragment extends ListFragment implements TokenList {
         listItems.add(map);
         adapter.notifyDataSetChanged();
     }
-
 }

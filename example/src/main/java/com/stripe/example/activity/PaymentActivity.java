@@ -3,6 +3,8 @@ package com.stripe.example.activity;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.widget.Toast;
+
 
 import com.stripe.example.R;
 import com.stripe.android.Stripe;
@@ -14,6 +16,8 @@ import com.stripe.example.dialog.ProgressDialogFragment;
 import com.stripe.example.PaymentForm;
 import com.stripe.example.TokenList;
 
+import java.util.ArrayList;
+
 
 public class PaymentActivity extends FragmentActivity {
 
@@ -23,7 +27,7 @@ public class PaymentActivity extends FragmentActivity {
      * You can get your key here: https://manage.stripe.com/account/apikeys
      */
     public static final String PUBLISHABLE_KEY = "pk_test_ONUkI9pWcWTjA6L6EHu2QUJI";
-
+    private ArrayList<Card> cards = new ArrayList<Card>();
     private ProgressDialogFragment progressFragment;
 
     @Override
@@ -49,24 +53,32 @@ public class PaymentActivity extends FragmentActivity {
                     card,
                     PUBLISHABLE_KEY,
                     new TokenCallback() {
-                    public void onSuccess(Token token) {
-                        getTokenList().addToList(token);
-                        finishProgress();
+                        public void onSuccess(Token token) {
+                            getTokenList().addToList(token);
+                            finishProgress();
                         }
-                    public void onError(Exception error) {
+                        public void onError(Exception error) {
                             handleError(error.getLocalizedMessage());
                             finishProgress();
                         }
                     });
         } else if (!card.validateNumber()) {
-        	handleError("The card number that you entered is invalid");
+            handleError("The card number that you entered is invalid");
         } else if (!card.validateExpiryDate()) {
-        	handleError("The expiration date that you entered is invalid");
+            handleError("The expiration date that you entered is invalid");
         } else if (!card.validateCVC()) {
-        	handleError("The CVC code that you entered is invalid");
+            handleError("The CVC code that you entered is invalid");
         } else {
-        	handleError("The card details that you entered are invalid");
+            handleError("The card details that you entered are invalid");
         }
+    }
+
+    public void payWithCard(Integer position) {
+        Card card = cards.get(position);
+
+        int duration = Toast.LENGTH_SHORT;
+
+        Toast.makeText(getApplicationContext(), card.getNumber(), duration).show();
     }
 
     private void startProgress() {
