@@ -5,6 +5,16 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
 
+import com.stripe.exception.APIConnectionException;
+import com.stripe.exception.APIException;
+import com.stripe.exception.AuthenticationException;
+import com.stripe.exception.CardException;
+import com.stripe.exception.InvalidRequestException;
+
+import com.stripe.model.Customer;
+
+
+import com.stripe.android.compat.AsyncTask;
 
 import com.stripe.example.R;
 import com.stripe.android.Stripe;
@@ -40,7 +50,7 @@ public class PaymentActivity extends FragmentActivity {
 
     public void saveCreditCard(PaymentForm form) {
 
-        Card card = new Card(
+        final Card card = new Card(
                 form.getCardNumber(),
                 form.getExpMonth(),
                 form.getExpYear(),
@@ -55,6 +65,7 @@ public class PaymentActivity extends FragmentActivity {
                     new TokenCallback() {
                         public void onSuccess(Token token) {
                             getTokenList().addToList(token);
+                            cards.add(card);
                             finishProgress();
                         }
                         public void onError(Exception error) {
@@ -73,10 +84,29 @@ public class PaymentActivity extends FragmentActivity {
         }
     }
 
-    public void payWithCard(Integer position) {
-        Card card = cards.get(position);
+    public void payWithCard(Integer position)  {
 
         int duration = Toast.LENGTH_SHORT;
+        com.stripe.Stripe.apiKey = "pk_test_ONUkI9pWcWTjA6L6EHu2QUJI";
+
+        Customer tom = null;
+        try {
+            tom = Customer.retrieve("cus_5ILWUP9V8hptpF");
+        } catch (CardException e) {
+            Toast.makeText(getApplicationContext(), e.toString(), duration).show();
+        } catch (APIException e) {
+            Toast.makeText(getApplicationContext(), e.toString(), duration).show();
+        } catch (AuthenticationException e) {
+            Toast.makeText(getApplicationContext(), e.toString(), duration).show();
+        } catch (InvalidRequestException e) {
+            Toast.makeText(getApplicationContext(), e.toString(), duration).show();
+        } catch (APIConnectionException e) {
+            Toast.makeText(getApplicationContext(), e.toString(), duration).show();
+        }
+
+
+        Card card = cards.get(position);
+
 
         Toast.makeText(getApplicationContext(), card.getNumber(), duration).show();
     }
@@ -96,5 +126,34 @@ public class PaymentActivity extends FragmentActivity {
 
     private TokenList getTokenList() {
         return (TokenList)(getSupportFragmentManager().findFragmentById(R.id.token_list));
+    }
+}
+
+public class StripeUtil extends AsyncTask<String, Void, Card> {
+    protected Card doInBackground(String customerCode) {
+
+        int duration = Toast.LENGTH_SHORT;
+        com.stripe.Stripe.apiKey = "pk_test_ONUkI9pWcWTjA6L6EHu2QUJI";
+
+        Customer tom = null;
+        try {
+            tom = Customer.retrieve("cus_5ILWUP9V8hptpF");
+        } catch (CardException e) {
+            Toast.makeText(getApplicationContext(), e.toString(), duration).show();
+        } catch (APIException e) {
+            Toast.makeText(getApplicationContext(), e.toString(), duration).show();
+        } catch (AuthenticationException e) {
+            Toast.makeText(getApplicationContext(), e.toString(), duration).show();
+        } catch (InvalidRequestException e) {
+            Toast.makeText(getApplicationContext(), e.toString(), duration).show();
+        } catch (APIConnectionException e) {
+            Toast.makeText(getApplicationContext(), e.toString(), duration).show();
+        }
+
+        return tom;
+    }
+
+    protected void onPostExecute(Long result) {
+        showDialog("Downloaded " + result + " bytes");
     }
 }

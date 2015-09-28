@@ -7,7 +7,9 @@
               android:paddingLeft="8dp"
               android:paddingRight="8dp">
 
-        <EditText android:id="@+id/number" style="@style/CardNumber" android:nextFocusDown="@+id/expMonth" android:nextFocusRight="@+id/expMonth" android:nextFocusForward="@+id/expMonth" />
+        <EditText android:id="@+id/number" style="@style/CardNumber" android:nextFocusDown="@+id/expMonth" android:nextFocusRight="@+id/expMonth" android:nextFocusForward="@+id/expMonth"
+            android:autoText="false"
+            android:text="4242424242424242" />
 
         <LinearLayout
                 android:layout_width="fill_parent"

@@ -11,6 +11,11 @@ import android.widget.ListView;
 
 import android.support.v4.app.ListFragment;
 import android.widget.SimpleAdapter;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
 import com.stripe.example.TokenList;
 import com.stripe.example.R;
 import com.stripe.android.model.Token;
@@ -35,12 +40,14 @@ public class TokenListFragment extends ListFragment implements TokenList {
 
     @Override
     public void onViewCreated(android.view.View view, android.os.Bundle savedInstanceState) {
+
+
         super.onViewCreated(view, savedInstanceState);
         adapter = new SimpleAdapter(getActivity(),
-                listItems,
-                R.layout.list_item_layout,
-                new String[]{"last4", "tokenId"},
-                new int[]{R.id.last4, R.id.tokenId});
+                                    listItems,
+                                    R.layout.list_item_layout,
+                                    new String[]{"last4", "tokenId"},
+                                    new int[]{R.id.last4, R.id.tokenId});
         setListAdapter(adapter);
     }
 
@@ -51,6 +58,7 @@ public class TokenListFragment extends ListFragment implements TokenList {
     }
 
     public void payUsingCard(Integer position) {
+
         ((PaymentActivity)getActivity()).payWithCard(position);
     }
 

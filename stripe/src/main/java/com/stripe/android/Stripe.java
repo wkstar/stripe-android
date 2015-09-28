@@ -1,10 +1,17 @@
 package com.stripe.android;
 
+import android.widget.Toast;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.Executor;
+
+import com.stripe.exception.APIException;
+import com.stripe.exception.CardException;
+import com.stripe.exception.InvalidRequestException;
+import com.stripe.model.Customer;
 
 import com.stripe.android.compat.AsyncTask;
 import com.stripe.android.model.Card;
@@ -15,10 +22,53 @@ import com.stripe.exception.AuthenticationException;
 public class Stripe {
     private String defaultPublishableKey;
 
+    public TokenCreator stripeWrapper = new TokenCreator() {
+        @Override
+        public void create(final Card card, final String publishableKey, final Executor executor,
+                           final TokenCallback callback) {
+
+
+            AsyncTask<Void, Void, ResponseWrapper> task = new AsyncTask<Void, Void, ResponseWrapper>() {
+
+
+                protected ResponseWrapper doInBackground(Void... params) {
+                    try {
+                        com.stripe.Stripe.apiKey = "pk_test_ONUkI9pWcWTjA6L6EHu2QUJI";
+
+                        Customer tom = null;
+                        try {
+                            tom = Customer.retrieve("cus_5ILWUP9V8hptpF");
+                        } catch (CardException e) {
+                            Toast.makeText(getApplicationContext(), e.toString(), duration).show();
+                        } catch (APIException e) {
+                            Toast.makeText(getApplicationContext(), e.toString(), duration).show();
+                        } catch (AuthenticationException e) {
+                            Toast.makeText(getApplicationContext(), e.toString(), duration).show();
+                        } catch (InvalidRequestException e) {
+                            Toast.makeText(getApplicationContext(), e.toString(), duration).show();
+                        } catch (APIConnectionException e) {
+                            Toast.makeText(getApplicationContext(), e.toString(), duration).show();
+                        }
+
+                        return tom;
+                    } catch (Exception e) {
+                        return new ResponseWrapper(null, e);
+                    }
+                }
+
+                protected void onPostExecute(ResponseWrapper result) {
+                    tokenTaskPostExecution(result, callback);
+                }
+            };
+
+            executeTokenTask(executor, task);
+        }
+    };
+
     public TokenCreator tokenCreator = new TokenCreator() {
         @Override
         public void create(final Card card, final String publishableKey, final Executor executor,
-                final TokenCallback callback) {
+                           final TokenCallback callback) {
             AsyncTask<Void, Void, ResponseWrapper> task = new AsyncTask<Void, Void, ResponseWrapper>() {
                 protected ResponseWrapper doInBackground(Void... params) {
                     try {
@@ -35,7 +85,7 @@ public class Stripe {
 
                 protected void onPostExecute(ResponseWrapper result) {
                     tokenTaskPostExecution(result, callback);
-               }
+                }
             };
 
             executeTokenTask(executor, task);

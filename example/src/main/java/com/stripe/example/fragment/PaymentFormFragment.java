@@ -34,8 +34,11 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
 
         this.cardNumber = (EditText) view.findViewById(R.id.number);
         this.cvc = (EditText) view.findViewById(R.id.cvc);
+        this.cvc.setText("123");
         this.monthSpinner = (Spinner) view.findViewById(R.id.expMonth);
+        this.monthSpinner.setSelection(2);
         this.yearSpinner = (Spinner) view.findViewById(R.id.expYear);
+        this.yearSpinner.setSelection(6);
 
         return view;
     }
