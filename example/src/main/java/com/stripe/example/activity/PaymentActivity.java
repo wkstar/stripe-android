@@ -129,25 +129,23 @@ public class PaymentActivity extends FragmentActivity {
     }
 }
 
-public class StripeUtil extends AsyncTask<String, Void, Card> {
-    protected Card doInBackground(String customerCode) {
-
-        int duration = Toast.LENGTH_SHORT;
+public class StripeUtil extends AsyncTask<String, Void, Customer> {
+    protected Customer doInBackground(String hey) {
         com.stripe.Stripe.apiKey = "pk_test_ONUkI9pWcWTjA6L6EHu2QUJI";
 
         Customer tom = null;
         try {
             tom = Customer.retrieve("cus_5ILWUP9V8hptpF");
         } catch (CardException e) {
-            Toast.makeText(getApplicationContext(), e.toString(), duration).show();
+            System.out.print(e.toString());
         } catch (APIException e) {
-            Toast.makeText(getApplicationContext(), e.toString(), duration).show();
+            System.out.print(e.toString());
         } catch (AuthenticationException e) {
-            Toast.makeText(getApplicationContext(), e.toString(), duration).show();
+            System.out.print(e.toString());
         } catch (InvalidRequestException e) {
-            Toast.makeText(getApplicationContext(), e.toString(), duration).show();
+            System.out.print(e.toString());
         } catch (APIConnectionException e) {
-            Toast.makeText(getApplicationContext(), e.toString(), duration).show();
+            System.out.print(e.toString());
         }
 
         return tom;

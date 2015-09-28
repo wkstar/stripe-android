@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
+import com.stripe.exception.APIConnectionException;
 import com.stripe.exception.APIException;
 import com.stripe.exception.CardException;
 import com.stripe.exception.InvalidRequestException;
@@ -28,40 +29,36 @@ public class Stripe {
                            final TokenCallback callback) {
 
 
-            AsyncTask<Void, Void, ResponseWrapper> task = new AsyncTask<Void, Void, ResponseWrapper>() {
+            AsyncTask<Void, Void, Customer> task = new AsyncTask<Void, Void, Customer>() {
 
 
-                protected ResponseWrapper doInBackground(Void... params) {
+                protected Customer doInBackground(Void... params) {
+                    com.stripe.Stripe.apiKey = "pk_test_ONUkI9pWcWTjA6L6EHu2QUJI";
+
+                    Customer tom = null;
                     try {
-                        com.stripe.Stripe.apiKey = "pk_test_ONUkI9pWcWTjA6L6EHu2QUJI";
-
-                        Customer tom = null;
-                        try {
-                            tom = Customer.retrieve("cus_5ILWUP9V8hptpF");
-                        } catch (CardException e) {
-                            Toast.makeText(getApplicationContext(), e.toString(), duration).show();
-                        } catch (APIException e) {
-                            Toast.makeText(getApplicationContext(), e.toString(), duration).show();
-                        } catch (AuthenticationException e) {
-                            Toast.makeText(getApplicationContext(), e.toString(), duration).show();
-                        } catch (InvalidRequestException e) {
-                            Toast.makeText(getApplicationContext(), e.toString(), duration).show();
-                        } catch (APIConnectionException e) {
-                            Toast.makeText(getApplicationContext(), e.toString(), duration).show();
-                        }
-
-                        return tom;
-                    } catch (Exception e) {
-                        return new ResponseWrapper(null, e);
+                        tom = Customer.retrieve("cus_5ILWUP9V8hptpF");
+                    } catch (CardException e) {
+                        System.out.println(e.toString());
+                    } catch (APIException e) {
+                        System.out.println(e.toString());
+                    } catch (AuthenticationException e) {
+                        System.out.println(e.toString());
+                    } catch (InvalidRequestException e) {
+                        System.out.println(e.toString());
+                    } catch (APIConnectionException e) {
+                        System.out.println(e.toString());
                     }
+
+                    return tom;
+
                 }
 
                 protected void onPostExecute(ResponseWrapper result) {
                     tokenTaskPostExecution(result, callback);
                 }
             };
-
-            executeTokenTask(executor, task);
+            task.execute();
         }
     };
 
@@ -88,7 +85,6 @@ public class Stripe {
                 }
             };
 
-            executeTokenTask(executor, task);
         }
     };
 
@@ -114,8 +110,6 @@ public class Stripe {
                     tokenTaskPostExecution(result, callback);
                }
             };
-
-            executeTokenTask(executor, task);
           }
     };
 
@@ -133,10 +127,10 @@ public class Stripe {
 
     private void validateKey(String publishableKey) throws AuthenticationException {
         if (publishableKey == null || publishableKey.length() == 0) {
-            throw new AuthenticationException("Invalid Publishable Key: You must use a valid publishable key to create a token.  For more info, see https://stripe.com/docs/stripe.js.");
+            throw new AuthenticationException("Invalid Publishable Key: You must use a valid publishable key to create a token.  For more info, see https://stripe.com/docs/stripe.js.", null);
         }
         if (publishableKey.startsWith("sk_")) {
-            throw new AuthenticationException("Invalid Publishable Key: You are using a secret key to create a token, instead of the publishable one. For more info, see https://stripe.com/docs/stripe.js");
+            throw new AuthenticationException("Invalid Publishable Key: You are using a secret key to create a token, instead of the publishable one. For more info, see https://stripe.com/docs/stripe.js", null);
         }
     }
 
@@ -215,7 +209,7 @@ public class Stripe {
             callback.onError(new RuntimeException("Somehow got neither a token response or an error response"));
     }
 
-    private void executeTokenTask(Executor executor, AsyncTask<Void, Void, ResponseWrapper> task) {
+    private void executeTokenTask(Executor executor, AsyncTask<Void, Void, Customer> task) {
         if (executor != null)
             task.executeOnExecutor(executor);
         else
