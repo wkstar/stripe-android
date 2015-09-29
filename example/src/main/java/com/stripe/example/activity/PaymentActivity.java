@@ -59,56 +59,24 @@ public class PaymentActivity extends FragmentActivity {
         boolean validation = card.validateCard();
         if (validation) {
             startProgress();
-            new Stripe().createToken(
-                    card,
-                    PUBLISHABLE_KEY,
-                    new TokenCallback() {
-                        public void onSuccess(Token token) {
-                            getTokenList().addToList(token);
-                            cards.add(card);
-                            finishProgress();
-                        }
-                        public void onError(Exception error) {
-                            handleError(error.getLocalizedMessage());
-                            finishProgress();
-                        }
-                    });
-        } else if (!card.validateNumber()) {
-            handleError("The card number that you entered is invalid");
-        } else if (!card.validateExpiryDate()) {
-            handleError("The expiration date that you entered is invalid");
-        } else if (!card.validateCVC()) {
-            handleError("The CVC code that you entered is invalid");
-        } else {
-            handleError("The card details that you entered are invalid");
+
+            StripeUtil getCard = new StripeUtil();
+            getCard.execute();
+            int duration = Toast.LENGTH_SHORT;
+
+            Toast.makeText(getApplicationContext(), "DONE", duration).show();
         }
     }
 
     public void payWithCard(Integer position)  {
 
+
+
+        StripeUtil getCard = new StripeUtil();
+        getCard.execute();
         int duration = Toast.LENGTH_SHORT;
-        com.stripe.Stripe.apiKey = "pk_test_ONUkI9pWcWTjA6L6EHu2QUJI";
 
-        Customer tom = null;
-        try {
-            tom = Customer.retrieve("cus_5ILWUP9V8hptpF");
-        } catch (CardException e) {
-            Toast.makeText(getApplicationContext(), e.toString(), duration).show();
-        } catch (APIException e) {
-            Toast.makeText(getApplicationContext(), e.toString(), duration).show();
-        } catch (AuthenticationException e) {
-            Toast.makeText(getApplicationContext(), e.toString(), duration).show();
-        } catch (InvalidRequestException e) {
-            Toast.makeText(getApplicationContext(), e.toString(), duration).show();
-        } catch (APIConnectionException e) {
-            Toast.makeText(getApplicationContext(), e.toString(), duration).show();
-        }
-
-
-        Card card = cards.get(position);
-
-
-        Toast.makeText(getApplicationContext(), card.getNumber(), duration).show();
+        Toast.makeText(getApplicationContext(), "DONE", duration).show();
     }
 
     private void startProgress() {
@@ -127,31 +95,33 @@ public class PaymentActivity extends FragmentActivity {
     private TokenList getTokenList() {
         return (TokenList)(getSupportFragmentManager().findFragmentById(R.id.token_list));
     }
-}
 
-public class StripeUtil extends AsyncTask<String, Void, Customer> {
-    protected Customer doInBackground(String hey) {
-        com.stripe.Stripe.apiKey = "pk_test_ONUkI9pWcWTjA6L6EHu2QUJI";
+    class StripeUtil extends AsyncTask<String, Void, Customer> {
+        protected Customer doInBackground(String... hate) {
+            com.stripe.Stripe.apiKey = "pk_test_ONUkI9pWcWTjA6L6EHu2QUJI";
 
-        Customer tom = null;
-        try {
-            tom = Customer.retrieve("cus_5ILWUP9V8hptpF");
-        } catch (CardException e) {
-            System.out.print(e.toString());
-        } catch (APIException e) {
-            System.out.print(e.toString());
-        } catch (AuthenticationException e) {
-            System.out.print(e.toString());
-        } catch (InvalidRequestException e) {
-            System.out.print(e.toString());
-        } catch (APIConnectionException e) {
-            System.out.print(e.toString());
+            Customer tom = null;
+            try {
+                tom = Customer.retrieve("cus_5ILWUP9V8hptpF");
+            } catch (CardException e) {
+                System.out.print(e.toString());
+            } catch (APIException e) {
+                System.out.print(e.toString());
+            } catch (AuthenticationException e) {
+                System.out.print(e.toString());
+            } catch (InvalidRequestException e) {
+                System.out.print(e.toString());
+            } catch (APIConnectionException e) {
+                System.out.print(e.toString());
+            }
+
+            return tom;
         }
 
-        return tom;
+        protected void onPostExecute(Customer result) {
+            System.out.print("RESULT- " + result.toString());
+        }
     }
 
-    protected void onPostExecute(Long result) {
-        showDialog("Downloaded " + result + " bytes");
-    }
+
 }
