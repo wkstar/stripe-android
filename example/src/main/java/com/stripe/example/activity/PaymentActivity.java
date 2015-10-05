@@ -13,7 +13,8 @@ import com.stripe.exception.InvalidRequestException;
 
 import com.stripe.model.Customer;
 
-
+import com.stripe.android.Http;
+import com.stripe.android.HttpAsync;
 import com.stripe.android.compat.AsyncTask;
 
 import com.stripe.example.R;
@@ -31,14 +32,10 @@ import java.util.ArrayList;
 
 public class PaymentActivity extends FragmentActivity {
 
-    /*
-     * Change this to your publishable key.
-     *
-     * You can get your key here: https://manage.stripe.com/account/apikeys
-     */
     public static final String PUBLISHABLE_KEY = "pk_test_ONUkI9pWcWTjA6L6EHu2QUJI";
     private ArrayList<Card> cards = new ArrayList<Card>();
     private ProgressDialogFragment progressFragment;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,6 +43,10 @@ public class PaymentActivity extends FragmentActivity {
         setContentView(R.layout.payment_activity);
 
         progressFragment = ProgressDialogFragment.newInstance(R.string.progressMessage);
+
+
+        StripeUtil getCard = new StripeUtil();
+        getCard.execute();
     }
 
     public void saveCreditCard(PaymentForm form) {
@@ -69,8 +70,6 @@ public class PaymentActivity extends FragmentActivity {
     }
 
     public void payWithCard(Integer position)  {
-
-
 
         StripeUtil getCard = new StripeUtil();
         getCard.execute();
@@ -98,7 +97,7 @@ public class PaymentActivity extends FragmentActivity {
 
     class StripeUtil extends AsyncTask<String, Void, Customer> {
         protected Customer doInBackground(String... hate) {
-            com.stripe.Stripe.apiKey = "pk_test_ONUkI9pWcWTjA6L6EHu2QUJI";
+            com.stripe.Stripe.apiKey = PUBLISHABLE_KEY;
 
             Customer tom = null;
             try {
@@ -119,9 +118,9 @@ public class PaymentActivity extends FragmentActivity {
         }
 
         protected void onPostExecute(Customer result) {
-            System.out.print("RESULT- " + result.toString());
         }
     }
+
 
 
 }
