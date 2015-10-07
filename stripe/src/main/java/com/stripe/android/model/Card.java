@@ -3,6 +3,10 @@ package com.stripe.android.model;
 import com.stripe.android.util.DateUtils;
 import com.stripe.android.util.TextUtils;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
 public class Card extends com.stripe.model.StripeObject {
     public static final String AMERICAN_EXPRESS = "American Express";
     public static final String DISCOVER = "Discover";
@@ -400,4 +404,33 @@ public class Card extends com.stripe.model.StripeObject {
     public String getCountry() {
         return country;
     }
+
+
+    public Map<String, Object> getAsHashMap() {
+        Map<String, Object> tokenParams = new HashMap<String, Object>();
+
+        Map<String, Object> cardParams = new HashMap<String, Object>();
+        cardParams.put("number", TextUtils.nullIfBlank(this.getNumber()));
+        cardParams.put("cvc", TextUtils.nullIfBlank(this.getCVC()));
+        cardParams.put("exp_month", this.getExpMonth());
+        cardParams.put("exp_year", this.getExpYear());
+        cardParams.put("name", TextUtils.nullIfBlank(this.getName()));
+        cardParams.put("address_line1", TextUtils.nullIfBlank(this.getAddressLine1()));
+        cardParams.put("address_line2", TextUtils.nullIfBlank(this.getAddressLine2()));
+        cardParams.put("address_city", TextUtils.nullIfBlank(this.getAddressCity()));
+        cardParams.put("address_zip", TextUtils.nullIfBlank(this.getAddressZip()));
+        cardParams.put("address_state", TextUtils.nullIfBlank(this.getAddressState()));
+        cardParams.put("address_country", TextUtils.nullIfBlank(this.getAddressCountry()));
+
+        // Remove all null values; they cause validation errors
+        for (String key : new HashSet<String>(cardParams.keySet())) {
+            if (cardParams.get(key) == null) {
+                cardParams.remove(key);
+            }
+        }
+
+        tokenParams.put("card", cardParams);
+        return tokenParams;
+    }
+
 }

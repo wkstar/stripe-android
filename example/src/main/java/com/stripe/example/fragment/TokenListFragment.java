@@ -1,6 +1,7 @@
 package com.stripe.example.fragment;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,10 @@ import com.stripe.example.R;
 import com.stripe.android.model.Token;
 import com.stripe.example.activity.PaymentActivity;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,26 +41,31 @@ public class TokenListFragment extends ListFragment implements TokenList {
     List<Map<String, String>> listItems = new ArrayList<Map<String, String>>();
     SimpleAdapter adapter;
 
-    private String token = "3132a6d4c2b35d00d5a9b4919facc836cf918d33";
+    private String token = "a6a9cc688daac65a0cf40a162fc91fffc1997061";
     private String customerId = "cus_5ILWUP9V8hptpF";
+    private CardList cardList = new CardList();
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id){
         payUsingCard(position);
     }
 
+    public void loadCards() {
+        cardList.execute("http://192.168.33.10:80/index.php/stripeCardList?customer=" + customerId + "&token=" + token);
+    }
+
+
     @Override
     public void onViewCreated(android.view.View view, android.os.Bundle savedInstanceState) {
 
-        CardList cardList = new CardList();
-        cardList.execute("http://localhost:80/index.php/stripeCardList?customer=" + customerId + "&token=" + token);
+
 
         super.onViewCreated(view, savedInstanceState);
         adapter = new SimpleAdapter(getActivity(),
                                     listItems,
                                     R.layout.list_item_layout,
-                                    new String[]{"last4", "tokenId"},
-                                    new int[]{R.id.last4, R.id.tokenId});
+                                    new String[]{"last4", "tokenId","name"},
+                                    new int[]{R.id.last4, R.id.tokenId, R.id.name});
         setListAdapter(adapter);
     }
 
@@ -89,10 +99,33 @@ public class TokenListFragment extends ListFragment implements TokenList {
         }
         @Override
         protected void onPostExecute(String result) {
-            Map<String, String> map = new HashMap<String, String>();
-            map.put("last4", "1233");
-            map.put("tokenId", "tmiead");
-            listItems.add(map);
+            try {
+                JSONObject stripeJson = new JSONObject(result);
+                JSONObject cardsJson = (JSONObject) stripeJson.get("cards");
+                JSONArray cards = cardsJson.getJSONArray("data");
+
+                for (int i=0; i < cards.length(); i++)
+                {
+                    try {
+                        JSONObject oneObject = cards.getJSONObject(i);
+                        Map<String, String> map = new HashMap<String, String>();
+                        map.put("last4", oneObject.getString("last4"));
+                        map.put("tokenId", oneObject.getString("brand"));
+                        map.put("name", oneObject.getString("name"));
+
+                        listItems.add(map);
+
+                    } catch (JSONException e) {
+                        Log.e("json", e.toString());
+                    }
+                }
+
+            } catch(JSONException e)
+            {
+                Log.e("json", e.toString());
+            }
+
+            adapter.notifyDataSetChanged();
         }
 
     }
